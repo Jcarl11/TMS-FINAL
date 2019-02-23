@@ -9,7 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -26,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tms.db.localdb.DBOperations;
 import org.tms.db.localdb.RetrieveDaysAverage;
+import org.tms.utilities.GlobalObjects;
+
+import com.jfoenix.controls.JFXRadioButton;
 
 import javafx.stage.WindowEvent;
 
@@ -41,8 +44,13 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.opencv.imgproc.Imgproc.resize;
 
@@ -122,9 +130,15 @@ public class DashboardController {
     
     //DB operations
     DBOperations db = new RetrieveDaysAverage();
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	DateFormat currentDay = new SimpleDateFormat("EEEE");
+	int intervals = 5; // 5seconds
+	TimeUnit unit = TimeUnit.SECONDS;
     
 	@FXML
 	private TextField areaTextField;
+	@FXML
+	private CheckBox interruptedCheckBox;
 	@FXML
 	private Button counterLineButton;
 	@FXML
@@ -353,6 +367,9 @@ public class DashboardController {
 		        mainLoop.start();
 		        isStarted = true;
 		        resetButton.setDisable(false);
+		        
+		        //save application state to database
+		        dbUpdateCounters();
 			}
 			
 	        
@@ -655,5 +672,28 @@ public class DashboardController {
             updateView(copiedImage);
         }
     }
+    
+    private void dbUpdateCounters() {
+		Runnable countGrab = new Runnable() {
+			@Override
+			public void run() {
+				Date date = new Date();
+				String count =quantityTextField.getText();
+				String currentDateTime = dateFormat.format(date);
+				String day = currentDay.format(date);
+				String trafficFlowType = "";
+				
+				if (interruptedCheckBox.isSelected())
+					trafficFlowType = "Interrupted";
+				else
+					trafficFlowType = "Uninterrupted";
+				
+				log.info("db Update");
+				db.insert(count, currentDateTime, day, areaTextField.getText().toUpperCase(), trafficFlowType);
+			}
+		};
+		GlobalObjects.getInstance().grabber = Executors.newSingleThreadScheduledExecutor();
+		GlobalObjects.getInstance().grabber.scheduleAtFixedRate(countGrab, 0, intervals, unit);
+	}
       
 }
