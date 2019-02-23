@@ -45,3 +45,5 @@ Add OpenCV native libraries.
 From Libraties tab, select opencv-343.jar and collapse select Native Library Location and edit.
 Locate and select directory TrafficMonitoringSystem/opencv-343/build/java/x64 --for 64 bit OS 
 
+Run project
+
