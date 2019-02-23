@@ -36,7 +36,7 @@ Right click project folder > Build Path > Configure Build Path > Libraries
 ```
 
 From Libraries tab, Add External JARs.
-Navigation to TrafficMonitoringSystem/third-party directory and select all jars.
+Navigate to TrafficMonitoringSystem/third-party directory and select all jars.
 
 Repeat the step and add OpenCV library.
 TrafficMonitoringSystem/opencv/opencv-343.jar
