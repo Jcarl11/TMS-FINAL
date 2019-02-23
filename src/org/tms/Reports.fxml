@@ -12,7 +12,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorpane_main" prefHeight="530.0" prefWidth="750.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8.0.162" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tms.ReportsController">
+<AnchorPane id="AnchorPane" fx:id="anchorpane_main" prefHeight="530.0" prefWidth="750.0" styleClass="anchor-pane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.tms.ReportsController">
     <stylesheets>
         <URL value="@Styles.css" />
     </stylesheets>
@@ -23,7 +23,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <LineChart fx:id="chart_averagevolume" prefHeight="371.0" prefWidth="600.0" title="Average Vehicle Volume" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <LineChart fx:id="chart_averagevolume" layoutY="-28.0" prefHeight="371.0" prefWidth="600.0" title="Average Vehicle Volume" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="-28.0">
                           <xAxis>
                             <CategoryAxis fx:id="axis_x" side="BOTTOM" />
                           </xAxis>
@@ -50,6 +50,7 @@
                      </children></AnchorPane>
             </content>
           </Tab>
+            <Tab fx:id="avgSpeedTab" text="Average Speed" />
         </tabs>
       </TabPane>
       <JFXButton fx:id="button_refresh" buttonType="RAISED" layoutX="208.0" layoutY="29.0" onAction="#button_refreshOnClick" prefHeight="38.0" prefWidth="110.0" ripplerFill="#867e7e" style="-fx-background-color: #c5b7b7;" text="Refresh" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />

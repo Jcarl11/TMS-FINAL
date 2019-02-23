@@ -5,6 +5,7 @@ import org.tms.entities.RecordEntity;
 import org.tms.db.localdb.DBOperations;
 import org.tms.db.localdb.RetrieveDaysAverage;
 import org.tms.db.localdb.RetrieveReport2;
+import org.tms.db.localdb.TrafficSpeedDAO;
 import org.tms.utilities.Day;
 import org.tms.utilities.GlobalObjects;
 import org.tms.utilities.InitializeReport2;
@@ -16,15 +17,17 @@ import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
@@ -32,10 +35,15 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import org.asynchttpclient.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReportsController implements Initializable {
+	final Logger log = LoggerFactory.getLogger(ReportsController.class);
 	RetrieveReport2 retrieveReport = new RetrieveReport2();
 	RetrieveDaysAverage db = new RetrieveDaysAverage();
+	TrafficSpeedDAO trafficSpeedDao = new TrafficSpeedDAO();
+	
 	@FXML
 	private Tab tab_averagevolume, tab_report2;
 	@FXML
@@ -54,7 +62,9 @@ public class ReportsController implements Initializable {
 	private TabPane tabpane_main;
 	@FXML
 	private AnchorPane anchorpane_main;
-
+	@FXML
+	private Tab avgSpeedTab;
+	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		CompletableFuture<Void> cf = CompletableFuture.runAsync(() -> db.retrieve(Day.Monday))
@@ -63,10 +73,10 @@ public class ReportsController implements Initializable {
 				.thenRun(() -> db.retrieve(Day.Saturday)).thenRun(() -> db.retrieve(Day.Sunday));
 		try {
 			cf.get();
-		} catch (InterruptedException ex) {
-			Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (ExecutionException ex) {
-			Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InterruptedException e) {
+			log.error(e.toString());
+		} catch (ExecutionException e) {
+			log.error(e.toString());
 		}
 		HashMap<Day, String> result = db.getResult();
 		XYChart.Series series = new XYChart.Series();
@@ -94,12 +104,14 @@ public class ReportsController implements Initializable {
 				.thenRun(() -> retrieveReport.retrieveValue(22)).thenRun(() -> retrieveReport.retrieveValue(23));
 		try {
 			completableFuture2.get();
-		} catch (InterruptedException ex) {
-			Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (ExecutionException ex) {
-			Logger.getLogger(ReportsController.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (InterruptedException e) {
+			log.error(e.toString());
+		} catch (ExecutionException e) {
+			log.error(e.toString());
 		}
 		report2.populateTable(retrieveReport.getResult());
+		
+		loadAvgSpeedReport();
 	}
 
 	@FXML
@@ -124,5 +136,39 @@ public class ReportsController implements Initializable {
 				GlobalObjects.getInstance().showMessage("Error", anchorpane_main);
 			}
 		});
+	}
+	
+	public void loadAvgSpeedReport() {
+		log.info("entry");
+		
+		HashMap<Double, String> avgSpeedHashMap = trafficSpeedDao.getAvgSpeed();
+		log.debug("avgSpeedHashMap: " + avgSpeedHashMap);
+		log.info("avgSpeedHashMap: " + avgSpeedHashMap);
+		
+		//Defining the y axis   
+		CategoryAxis xAxis = new CategoryAxis (); 
+		xAxis.setLabel("Daily"); 		
+
+		NumberAxis yAxis = new NumberAxis(0, 200, 20); 
+		yAxis.setLabel("Average Speed"); 
+
+		//Creating the line chart 
+		LineChart linechart = new LineChart(xAxis, yAxis);  
+
+		//Prepare XYChart.Series objects by setting data 
+		XYChart.Series series = new XYChart.Series(); 
+		series.setName("Average speed of vehicles per day"); 
+		avgSpeedHashMap.forEach((k, v) -> {
+			series.getData().add(new XYChart.Data(v, k)); 
+		});
+
+		//Setting the data to Line chart    
+		linechart.getData().add(series);        
+
+		//Creating a Group object  
+		Group root = new Group(linechart); 
+
+		avgSpeedTab.setContent(root);
+		log.info("exit");
 	}
 }

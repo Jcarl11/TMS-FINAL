@@ -112,7 +112,7 @@ public class MainController implements Initializable {
 						Mat frame = new Mat();
 						MatOfRect detected = new MatOfRect();
 						MatOfRect rect = new MatOfRect();
-						startBackgroundCounter();
+//						startBackgroundCounter();
 						Runnable frameGrabber = new Runnable() {
 							@Override
 							public void run() {
@@ -177,21 +177,21 @@ public class MainController implements Initializable {
 		GlobalObjects.getInstance().openNewWindow("Reports.fxml", "Reports", StageStyle.UTILITY);
 	}
 
-	private void startBackgroundCounter() {
-		Runnable countGrab = new Runnable() {
-			@Override
-			public void run() {
-				Date date = new Date();
-				String count = textfield_carcount.getText().trim();
-				String currentDateTime = dateFormat.format(date);
-				String day = currentDay.format(date);
-				db.insert(count, currentDateTime, day, textfield_areaname.getText().toUpperCase(),
-						((JFXRadioButton) RadioGroup1.getSelectedToggle()).getText());
-			}
-		};
-		GlobalObjects.getInstance().grabber = Executors.newSingleThreadScheduledExecutor();
-		GlobalObjects.getInstance().grabber.scheduleAtFixedRate(countGrab, 0, intervals, unit);
-	}
+//	private void startBackgroundCounter() {
+//		Runnable countGrab = new Runnable() {
+//			@Override
+//			public void run() {
+//				Date date = new Date();
+//				String count = textfield_carcount.getText().trim();
+//				String currentDateTime = dateFormat.format(date);
+//				String day = currentDay.format(date);
+//				db.insert(count, currentDateTime, day, textfield_areaname.getText().toUpperCase(),
+//						((JFXRadioButton) RadioGroup1.getSelectedToggle()).getText());
+//			}
+//		};
+//		GlobalObjects.getInstance().grabber = Executors.newSingleThreadScheduledExecutor();
+//		GlobalObjects.getInstance().grabber.scheduleAtFixedRate(countGrab, 0, intervals, unit);
+//	}
 
 	private void startBackgroundCompute() {
 		Runnable computer = new Runnable() {

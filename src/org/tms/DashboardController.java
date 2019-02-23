@@ -56,7 +56,7 @@ import static org.opencv.imgproc.Imgproc.resize;
 
 public class DashboardController {
 	
-	Logger log = LoggerFactory.getLogger(TrafficMonitoringSystem.class);
+	final Logger log = LoggerFactory.getLogger(DashboardController.class);
     private ImageView bgsImageView = new ImageView();
     
     private volatile boolean loopBreaker = false;
@@ -678,7 +678,8 @@ public class DashboardController {
 			@Override
 			public void run() {
 				Date date = new Date();
-				String count =quantityTextField.getText();
+				String count = quantityTextField.getText().trim();
+				String avgSpeed = avgSpeedTextField.getText().trim();
 				String currentDateTime = dateFormat.format(date);
 				String day = currentDay.format(date);
 				String trafficFlowType = "";
@@ -688,8 +689,8 @@ public class DashboardController {
 				else
 					trafficFlowType = "Uninterrupted";
 				
-				log.info("db Update");
-				db.insert(count, currentDateTime, day, areaTextField.getText().toUpperCase(), trafficFlowType);
+				log.info("updating database counters");
+				db.insert(count, avgSpeed, currentDateTime, day, areaTextField.getText().toUpperCase(), trafficFlowType);
 			}
 		};
 		GlobalObjects.getInstance().grabber = Executors.newSingleThreadScheduledExecutor();

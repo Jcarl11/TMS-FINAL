@@ -24,10 +24,9 @@ import org.slf4j.LoggerFactory;
  * @author Windows
  */
 public class TrafficMonitoringSystem extends Application {
-	
 	@Override
 	public void start(Stage stage) throws Exception {
-		Logger log = LoggerFactory.getLogger(TrafficMonitoringSystem.class);
+		final Logger log = LoggerFactory.getLogger(TrafficMonitoringSystem.class);
 		/*
 		 * FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
 		 * loader.setController(new MainController()); BorderPane mainPane =
@@ -66,7 +65,6 @@ public class TrafficMonitoringSystem extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Traffic Monitoring System");
 //		if (UsersPreferences.getInstance().getPreference().get("sessionToken", null) != null)
-		log.info("show stage.");
 		stage.show();
 //		else
 //			GlobalObjects.getInstance().openNewWindow("LoginRegister.fxml", "Login or Signup", StageStyle.DECORATED);

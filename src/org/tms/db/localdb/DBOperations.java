@@ -22,7 +22,7 @@ public abstract class DBOperations {
 	public void createDB() {
 		try {
 			initializeDB();
-			String command = "CREATE TABLE IF NOT EXISTS RAWDATA" + "(COUNT VARCHAR(50)," + "TIMESTAMP DATETIME,"
+			String command = "CREATE TABLE IF NOT EXISTS RAWDATA" + "(COUNT VARCHAR(20)," + "AVG_SPEED DOUBLE(20,2)," + "TIMESTAMP DATETIME,"
 					+ "DAY VARCHAR(50)," + "FACILITY VARCHAR(50)," + "FACILTYTYPE VARCHAR(50));";
 			statement = connection.prepareStatement(command);
 			int result = statement.executeUpdate();
@@ -37,7 +37,7 @@ public abstract class DBOperations {
 	public void addColumn() {
 		try {
 			initializeDB();
-			String command = "CREATE TABLE IF NOT EXISTS RAWDATA" + "(COUNT VARCHAR(50)," + "TIMESTAMP DATETIME,"
+			String command = "CREATE TABLE IF NOT EXISTS RAWDATA" + "(COUNT VARCHAR(20)," + "AVG_SPEED DOUBLE(20,2)," + "TIMESTAMP DATETIME,"
 					+ "DAY VARCHAR(50)," + "FACILITY VARCHAR(50)," + "FACILITYTYPE VARCHAR(50));";
 			statement = connection.prepareStatement(command);
 			int result = statement.executeUpdate();
@@ -49,16 +49,17 @@ public abstract class DBOperations {
 
 	}
 
-	public void insert(String count, String timeStamp, String day, String facility, String facilityType) {
+	public void insert(String count, String avgSpeed, String timeStamp, String day, String facility, String facilityType) {
 		try {
 			initializeDB();
-			String command = "insert into RAWDATA(COUNT,TIMESTAMP,DAY,FACILITY,FACILTYTYPE)values(?,?,?,?,?);";
+			String command = "insert into RAWDATA(COUNT,AVG_SPEED,TIMESTAMP,DAY,FACILITY,FACILTYTYPE)values(?,?,?,?,?,?);";
 			statement = connection.prepareStatement(command);
 			statement.setString(1, count);
-			statement.setString(2, timeStamp);
-			statement.setString(3, day);
-			statement.setString(4, facility);
-			statement.setString(5, facilityType);
+			statement.setDouble(2, Double.parseDouble(avgSpeed));
+			statement.setString(3, timeStamp);
+			statement.setString(4, day);
+			statement.setString(5, facility);
+			statement.setString(6, facilityType);
 			statement.executeUpdate();
 		} catch (SQLException sQLException) {
 			sQLException.printStackTrace();
