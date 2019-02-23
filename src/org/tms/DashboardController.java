@@ -10,8 +10,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
-import com.jfoenix.controls.JFXButton;
-
 import javafx.scene.control.TextField;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -26,21 +24,9 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tms.GUI.Loop;
+import org.tms.db.localdb.DBOperations;
+import org.tms.db.localdb.RetrieveDaysAverage;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.WindowAdapter;
 import javafx.stage.WindowEvent;
 
 import javafx.scene.input.MouseButton;
@@ -63,9 +49,6 @@ import static org.opencv.imgproc.Imgproc.resize;
 public class DashboardController {
 	
 	Logger log = LoggerFactory.getLogger(TrafficMonitoringSystem.class);
-	
-	private JFrame frameBGS;
-    private JLabel BGSview;
     private ImageView bgsImageView = new ImageView();
     
     private volatile boolean loopBreaker = false;
@@ -81,7 +64,6 @@ public class DashboardController {
     private ImageProcessor imageProcessor = new ImageProcessor();
     private Mat foregroundImage;
     
-    private JFormattedTextField currentTimeField;
     private volatile boolean isPaused = true;
     private boolean isStarted = false;
     
@@ -125,8 +107,7 @@ public class DashboardController {
     
     private volatile boolean isProcessInRealTime = true;
     private long startTime;
-    private JFormattedTextField vehiclesAmountField;
-    private JFormattedTextField vehiclesSpeedField;
+
     
     private Mat foregroundClone;
     
@@ -135,9 +116,12 @@ public class DashboardController {
     private boolean startDraw;
     private Mat copiedImage;
     
-    private JButton BGSButton;
     private volatile boolean isBGSview = false;
     private Mat ImageBGS = new Mat();
+    
+    
+    //DB operations
+    DBOperations db = new RetrieveDaysAverage();
     
 	@FXML
 	private TextField areaTextField;
@@ -176,6 +160,9 @@ public class DashboardController {
         counterLineButton.setDisable(true);
         speedLineButton.setDisable(true);
         resetButton.setDisable(true);
+        
+        log.info("initialize database.");
+        db.createDB();
                
         
     }
@@ -669,14 +656,4 @@ public class DashboardController {
         }
     }
       
-    private void initBGSview() {
-        frameBGS = new JFrame("BGS View");
-        BGSview = new JLabel();
-        frameBGS.add(BGSview);
-        Mat localImage = new Mat(new Size(430, 240), CvType.CV_8UC3, new Scalar(255, 255, 255));
-        BGSview.setIcon(new ImageIcon(imageProcessor.toBufferedImage(localImage)));
-        frameBGS.setVisible(true);
-        frameBGS.pack();
-
-    }
 }
