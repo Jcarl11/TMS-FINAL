@@ -148,7 +148,7 @@ public class DashboardController {
 	@FXML
 	private ImageView videoContainerImageView;
 	@FXML
-	private JFXButton signOutButton;
+	private Button signOutButton;
 	@FXML
 	private Button viewReportButton;
 	@FXML
