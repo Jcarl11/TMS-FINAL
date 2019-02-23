@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.opencv.core.Core;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,15 +27,16 @@ public class TrafficMonitoringSystem extends Application {
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		Logger log = LoggerFactory.getLogger(TrafficMonitoringSystem.class);
 		/*
 		 * FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
 		 * loader.setController(new MainController()); BorderPane mainPane =
 		 * loader.load();
 		 */
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		System.out.println("native library loaded");
+		log.info("native library loaded");
 		Parent root = FXMLLoader.load(getClass().getResource("Dashboard.fxml"));
-		System.out.println("load dashboard");
+		log.info("load dashboard");
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event) {
@@ -63,8 +66,8 @@ public class TrafficMonitoringSystem extends Application {
 		stage.setScene(scene);
 		stage.setTitle("Traffic Monitoring System");
 //		if (UsersPreferences.getInstance().getPreference().get("sessionToken", null) != null)
-		System.out.println("show stage.");
-			stage.show();
+		log.info("show stage.");
+		stage.show();
 //		else
 //			GlobalObjects.getInstance().openNewWindow("LoginRegister.fxml", "Login or Signup", StageStyle.DECORATED);
 	}
