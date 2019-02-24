@@ -1,7 +1,9 @@
 package org.tms;
 
 import org.tms.db.TaskExecutor;
+import org.tms.entities.AvgSpeedEntity;
 import org.tms.entities.RecordEntity;
+import org.tms.model.Period;
 import org.tms.db.localdb.DBOperations;
 import org.tms.db.localdb.RetrieveDaysAverage;
 import org.tms.db.localdb.RetrieveReport2;
@@ -10,13 +12,20 @@ import org.tms.utilities.Day;
 import org.tms.utilities.GlobalObjects;
 import org.tms.utilities.InitializeReport2;
 import com.jfoenix.controls.JFXButton;
+
+import java.awt.List;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,6 +38,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -64,6 +74,18 @@ public class ReportsController implements Initializable {
 	private AnchorPane anchorpane_main;
 	@FXML
 	private Tab avgSpeedTab;
+	@FXML
+	private NumberAxis avgSpeedNumberAxis;
+	@FXML
+	private CategoryAxis avgSpeedCategoryAxis;
+	@FXML
+	private LineChart<Double, String> avgSpeedLineChart;
+	@FXML
+	private ComboBox<String> avgVolComboBox;
+	@FXML
+	private ComboBox<String> avgSpdComboBox;
+	@FXML
+	private AnchorPane avgSpdChartAnchorPane;
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -80,6 +102,7 @@ public class ReportsController implements Initializable {
 		}
 		HashMap<Day, String> result = db.getResult();
 		XYChart.Series series = new XYChart.Series();
+		series.setName("Volume of cars per day");
 		series.getData().add(new XYChart.Data(Day.Monday.toString(), Double.valueOf(result.get(Day.Monday))));
 		series.getData().add(new XYChart.Data(Day.Tuesday.toString(), Double.valueOf(result.get(Day.Tuesday))));
 		series.getData().add(new XYChart.Data(Day.Wednesday.toString(), Double.valueOf(result.get(Day.Wednesday))));
@@ -111,6 +134,15 @@ public class ReportsController implements Initializable {
 		}
 		report2.populateTable(retrieveReport.getResult());
 		
+		ObservableList<String> options = 
+			    FXCollections.observableArrayList(
+			        "All",
+			        "Last 7 days",
+			        "Last 30 days"
+			    );
+		avgVolComboBox.getItems().addAll(options);
+		avgVolComboBox.setValue(options.get(1));
+		
 		loadAvgSpeedReport();
 	}
 
@@ -138,37 +170,108 @@ public class ReportsController implements Initializable {
 		});
 	}
 	
+	@FXML
+	private void handleAvgVolComboBoxAction(ActionEvent event) throws IOException {
+		
+	}
+	
+	@FXML
+	private void handleAvgSpdComboBoxAction(ActionEvent event) throws IOException {
+		log.debug("Period: " + avgSpdComboBox.getValue());
+
+		ArrayList<AvgSpeedEntity> avgSpeedEntityList = new ArrayList<AvgSpeedEntity>();
+		trafficSpeedDao = new TrafficSpeedDAO();
+		XYChart.Series<Double, String> series = new XYChart.Series<Double, String>();
+		avgSpeedEntityList = trafficSpeedDao.getAvgSpeed(avgSpdComboBox.getValue());
+		ArrayList<String> categories = new ArrayList<String>();
+		//Defining the y axis   
+		avgSpdChartAnchorPane.getChildren().clear();
+		CategoryAxis xAxis = new CategoryAxis (); 
+		xAxis.setLabel("Daily"); 		
+		
+		NumberAxis yAxis = new NumberAxis(0, 100, 20); 
+		yAxis.setLabel("Average Speed"); 
+		LineChart linechart = new LineChart(xAxis, yAxis);
+		linechart.setPrefWidth(700);
+		linechart.setPrefHeight(370);
+
+//		avgSpeedCategoryAxis.setCategories(FXCollections.<String>observableArrayList(categories));
+		avgSpeedEntityList.forEach(avgSpeedEntity -> {
+			categories.add(avgSpeedEntity.date); 
+		});
+		
+//		avgSpeedCategoryAxis.setCategories(FXCollections.<String>observableArrayList(categories));
+		log.debug("categories length: " + categories.size());
+//		series.getData().forEach(axis -> axis.setXValue((double) 0));
+//		series.getData().forEach(axis -> axis.setYValue(""));
+		//Prepare XYChart.Series objects by setting data 
+		
+		series.setName("Average speed of vehicles per day");
+		avgSpeedEntityList.forEach(avgSpeedEntity -> {
+			log.debug("-----------------------");
+			log.debug("date: " + avgSpeedEntity.date + " avg: " + avgSpeedEntity.avg);
+			series.getData().add(new XYChart.Data(avgSpeedEntity.date, avgSpeedEntity.avg)); 
+		});
+
+		//Setting the data to Line chart  
+//		avgSpeedLineChart.getData().clear();
+//		avgSpeedLineChart.getData().add(series);
+		linechart.getData().clear();
+		linechart.getData().add(series);        
+
+		//Creating a Group object  
+		//Creating a Group object  
+		Group avgSpdChartGroup = new Group(linechart); 
+
+		avgSpdChartAnchorPane.getChildren().add(avgSpdChartGroup);
+	}
+	
 	public void loadAvgSpeedReport() {
 		log.info("entry");
+				
+		ObservableList<String> options = 
+			    FXCollections.observableArrayList(Period.ALL.getPeriod(), Period.LAST_7_DAYS.getPeriod(), Period.LAST_30_DAYS.getPeriod());
+		avgSpdComboBox.getItems().addAll(options);
+		avgSpdComboBox.setValue(options.get(1));
 		
-		HashMap<Double, String> avgSpeedHashMap = trafficSpeedDao.getAvgSpeed();
-		log.debug("avgSpeedHashMap: " + avgSpeedHashMap);
-		log.info("avgSpeedHashMap: " + avgSpeedHashMap);
+		ArrayList<AvgSpeedEntity> avgSpeedEntityList = new ArrayList<AvgSpeedEntity>();
+		trafficSpeedDao = new TrafficSpeedDAO();
+		avgSpeedEntityList = trafficSpeedDao.getAvgSpeed(avgSpdComboBox.getValue()); 
+		ArrayList<String> categories = new ArrayList<String>();
+		avgSpeedEntityList.forEach(avgSpeedEntity -> {
+			categories.add(avgSpeedEntity.date); 
+		});
+//		avgSpeedCategoryAxis.setCategories(FXCollections.<String>observableArrayList(categories));
+		
+//		avgSpeedCategoryAxis.invalidateRange(categories);
+		//Prepare XYChart.Series objects by setting data 
 		
 		//Defining the y axis   
 		CategoryAxis xAxis = new CategoryAxis (); 
 		xAxis.setLabel("Daily"); 		
 
-		NumberAxis yAxis = new NumberAxis(0, 200, 20); 
+		NumberAxis yAxis = new NumberAxis(0, 100, 20);
 		yAxis.setLabel("Average Speed"); 
-
-		//Creating the line chart 
 		LineChart linechart = new LineChart(xAxis, yAxis);  
-
-		//Prepare XYChart.Series objects by setting data 
-		XYChart.Series series = new XYChart.Series(); 
-		series.setName("Average speed of vehicles per day"); 
-		avgSpeedHashMap.forEach((k, v) -> {
-			series.getData().add(new XYChart.Data(v, k)); 
+		linechart.setPrefWidth(700);
+		linechart.setPrefHeight(370);
+		XYChart.Series series = new XYChart.Series();
+		series.setName("Average speed of vehicles per day");
+		avgSpeedEntityList.forEach(avgSpeedEntity -> {
+			series.getData().add(new XYChart.Data(avgSpeedEntity.date, avgSpeedEntity.avg)); 
 		});
 
 		//Setting the data to Line chart    
+//		avgSpeedLineChart.getData().clear();
+//		avgSpeedLineChart.getData().add(series);
+		linechart.getData().clear();
 		linechart.getData().add(series);        
 
 		//Creating a Group object  
-		Group root = new Group(linechart); 
+		Group avgSpdChartGroup = new Group(linechart); 
 
-		avgSpeedTab.setContent(root);
+		avgSpdChartAnchorPane.getChildren().add(avgSpdChartGroup);
+	
 		log.info("exit");
 	}
 }

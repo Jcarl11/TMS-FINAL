@@ -6,6 +6,8 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -17,13 +19,13 @@
         <URL value="@Styles.css" />
     </stylesheets>
    <children>
-      <TabPane fx:id="tabpane_main" layoutX="175.0" layoutY="114.0" prefHeight="530.0" prefWidth="750.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TabPane fx:id="tabpane_main" layoutX="175.0" layoutY="114.0" prefHeight="460.0" prefWidth="750.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab fx:id="tab_averagevolume" text="Average Volume">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <LineChart fx:id="chart_averagevolume" layoutY="-28.0" prefHeight="371.0" prefWidth="600.0" title="Average Vehicle Volume" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="-28.0">
+                        <LineChart fx:id="chart_averagevolume" layoutX="23.0" layoutY="46.0" prefHeight="371.0" prefWidth="600.0" title="Average Vehicle Volume" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="46.0">
                           <xAxis>
                             <CategoryAxis fx:id="axis_x" side="BOTTOM" />
                           </xAxis>
@@ -31,6 +33,8 @@
                             <NumberAxis fx:id="axis_y" side="LEFT" />
                           </yAxis>
                         </LineChart>
+                        <Label layoutX="14.0" layoutY="13.0" text="Select period:" />
+                        <ComboBox fx:id="avgVolComboBox" layoutX="92.0" layoutY="9.0" onAction="#handleAvgVolComboBoxAction" prefWidth="135.0" />
                      </children>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -50,7 +54,16 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-            <Tab fx:id="avgSpeedTab" text="Average Speed" />
+            <Tab fx:id="avgSpeedTab" text="Average Speed">
+               <content>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="24.0" layoutY="23.0" text="Select period:" />
+                        <ComboBox fx:id="avgSpdComboBox" layoutX="102.0" layoutY="19.0" onAction="#handleAvgSpdComboBoxAction" prefWidth="135.0" />
+                        <AnchorPane fx:id="avgSpdChartAnchorPane" layoutX="12.0" layoutY="56.0" prefHeight="357.0" prefWidth="728.0" />
+                     </children>
+                  </AnchorPane>
+               </content></Tab>
         </tabs>
       </TabPane>
       <JFXButton fx:id="button_refresh" buttonType="RAISED" layoutX="208.0" layoutY="29.0" onAction="#button_refreshOnClick" prefHeight="38.0" prefWidth="110.0" ripplerFill="#867e7e" style="-fx-background-color: #c5b7b7;" text="Refresh" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
