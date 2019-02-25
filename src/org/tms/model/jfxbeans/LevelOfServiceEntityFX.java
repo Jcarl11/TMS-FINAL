@@ -1,17 +1,21 @@
 package org.tms.model.jfxbeans;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class LevelOfServiceEntityFX {
     private final SimpleStringProperty hour;
-    private final SimpleStringProperty avgVolume;
+    private final SimpleStringProperty volume;
+    private final SimpleStringProperty avgSpeed;
     private final SimpleStringProperty facility;
     private final SimpleStringProperty facilityType;
     private final SimpleStringProperty lvlOfService;
 
-    public LevelOfServiceEntityFX(String hour, String avgVolume, String facility, String facilityType, String lvlOfService) {
+    public LevelOfServiceEntityFX(String hour, String volume, String avgSpeed, String facility, String facilityType, String lvlOfService) {
         this.hour = new SimpleStringProperty(hour);
-        this.avgVolume = new SimpleStringProperty(avgVolume);
+        this.volume = new SimpleStringProperty(volume);
+        this.avgSpeed = new SimpleStringProperty(avgSpeed);
         this.facility = new SimpleStringProperty(facility);
         this.facilityType = new SimpleStringProperty(facilityType);
         this.lvlOfService = new SimpleStringProperty(lvlOfService);
@@ -25,12 +29,20 @@ public class LevelOfServiceEntityFX {
     	this.hour.set(hour);
     }
 
-    public String getAvgVolume() {
-        return avgVolume.get();
+    public String getVolume() {
+        return volume.get();
     }
 
-    public void setAvgVolume(String avgVolume) {
-    	this.avgVolume.set(avgVolume);
+    public void setVolume(String volume) {
+    	this.volume.set(volume);
+    }
+    
+    public String getAvgSpeed() {
+        return avgSpeed.get();
+    }
+
+    public void setAvgSpeed(String avgSpeed) {
+    	this.avgSpeed.set(avgSpeed);
     }
 
     public String getFacility() {
@@ -56,4 +68,28 @@ public class LevelOfServiceEntityFX {
     public void setLvlOfService(String lvlOfService) {
         this.lvlOfService.set(lvlOfService);
     }
+    
+    public SimpleStringProperty hourProperty() {
+		return hour;
+	}
+    
+    public SimpleStringProperty volumeProperty() {
+		return volume;
+	}
+    
+    public SimpleStringProperty avgSpeedProperty() {
+		return avgSpeed;
+	}
+    
+    public SimpleStringProperty facilityProperty() {
+		return facility;
+	}
+    
+    public SimpleStringProperty facilityTypeProperty() {
+		return facilityType;
+	}
+    
+    public SimpleStringProperty lvlOfServiceProperty() {
+		return lvlOfService;
+	}
 }

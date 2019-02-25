@@ -65,7 +65,7 @@ public class TaskExecutor {
 			protected Response call() throws Exception {
 				RetrieveReport2 retrieveReport = new RetrieveReport2();
 				RetrieveDaysAverage retrieveDaysAverage = new RetrieveDaysAverage();
-				CompletableFuture<Response> completableFuture2 = CompletableFuture
+				CompletableFuture<Response> completableFuture = CompletableFuture
 						.runAsync(() -> retrieveReport.retrieveValue_COMPLETETIME(1))
 						.thenRun(() -> retrieveReport.retrieveValue_COMPLETETIME(2))
 						.thenRun(() -> retrieveReport.retrieveValue_COMPLETETIME(3))
@@ -100,7 +100,7 @@ public class TaskExecutor {
 						.thenApply(data -> retrieveReport.insert(retrieveReport.getResult()));
 				Response response = null;
 				try {
-					response = completableFuture2.get();
+					response = completableFuture.get();
 				} catch (InterruptedException interruptedException) {
 					interruptedException.printStackTrace();
 				} catch (ExecutionException executionException) {

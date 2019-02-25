@@ -26,7 +26,7 @@ public abstract class DBOperations {
 	public void createDB() {
 		try {
 			initializeDB();
-			String command = "CREATE TABLE IF NOT EXISTS RAWDATA (ID INTEGER PRIMARY KEY AUTOINCREMENT, COUNT INT, AVG_SPEED DECIMAL(4,2), TIMESTAMP DATE, FACILITY VARCHAR(20), FACILITY_TYPE VARCHAR(20));";
+			String command = "CREATE TABLE IF NOT EXISTS RAWDATA (ID INTEGER PRIMARY KEY AUTOINCREMENT, COUNT INT, SPEED DECIMAL(4,2), TIMESTAMP DATE, FACILITY VARCHAR(20), FACILITY_TYPE VARCHAR(20));";
 			statement = connection.prepareStatement(command);
 			int result = statement.executeUpdate();
 		} catch (Exception ex) {
@@ -40,7 +40,7 @@ public abstract class DBOperations {
 	public void addColumn() {
 		try {
 			initializeDB();
-			String command = "CREATE TABLE IF NOT EXISTS RAWDATA (ID INTEGER PRIMARY KEY AUTOINCREMENT, COUNT INT, AVG_SPEED DECIMAL(4,2), TIMESTAMP DATE, FACILITY VARCHAR(20), FACILITY_TYPE VARCHAR(20));";
+			String command = "CREATE TABLE IF NOT EXISTS RAWDATA (ID INTEGER PRIMARY KEY AUTOINCREMENT, COUNT INT, SPEED DECIMAL(4,2), TIMESTAMP DATE, FACILITY VARCHAR(20), FACILITY_TYPE VARCHAR(20));";
 			statement = connection.prepareStatement(command);
 			int result = statement.executeUpdate();
 		} catch (Exception ex) {
@@ -51,18 +51,17 @@ public abstract class DBOperations {
 
 	}
 
-	public void insert(String count, String avgSpeed, String timeStamp, String day, String facility, String facilityType) {
+	public void insert(int count, double avgSpeed, String timeStamp, String facility, String facilityType) {
 		try {
 			log.info("insert data");
 			initializeDB();
-			String command = "insert into rawdata(COUNT,AVG_SPEED,TIMESTAMP,FACILITY,FACILITY_TYPE)values(?,?,?,?,?);";
+			String command = "insert into rawdata(COUNT,SPEED,TIMESTAMP,FACILITY,FACILITY_TYPE)values(?,?,?,?,?);";
 			statement = connection.prepareStatement(command);
-			statement.setString(1, count);
-			statement.setDouble(2, Double.parseDouble(avgSpeed));
+			statement.setInt(1, count);
+			statement.setDouble(2, avgSpeed);
 			statement.setString(3, timeStamp);
-			statement.setString(4, day);
-			statement.setString(5, facility);
-			statement.setString(6, facilityType);
+			statement.setString(4, facility);
+			statement.setString(5, facilityType);
 			statement.executeUpdate();
 			log.info("finished inserting data");
 		} catch (SQLException sQLException) {

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tms.entities.AvgVolumeEntity;
+import org.tms.entities.VolumeEntity;
 import org.tms.model.Period;
 
 public class TrafficVolumeDAO extends DBOperations {
@@ -17,9 +17,9 @@ public class TrafficVolumeDAO extends DBOperations {
 	private PreparedStatement statement = null;
 	private Connection connection = null;
 	private ResultSet resultSet = null;
-	private ArrayList<AvgVolumeEntity> responseList = new ArrayList<AvgVolumeEntity>();
+	private ArrayList<VolumeEntity> responseList = new ArrayList<VolumeEntity>();
 	
-	public ArrayList<AvgVolumeEntity> getAvgVolume(String period) {
+	public ArrayList<VolumeEntity> getVolumePerHour(String period) {
 		try {
 			
 			log.info("retrieving db data");
@@ -33,13 +33,13 @@ public class TrafficVolumeDAO extends DBOperations {
 			log.debug(Period.fromValue(period).toString());
 			switch (Period.fromValue(period)) {
 			case LAST_7_DAYS:
-				command = "select round(avg(COUNT), 2) AVG_VOLUME, strftime('%m-%d', timestamp) DATE from rawdata" + last7DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select SUM(COUNT) VOLUME, strftime('%m-%d', timestamp) DATE from rawdata" + last7DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
 				break;
 			case LAST_30_DAYS:
-				command = "select round(avg(COUNT), 2) AVG_VOLUME, strftime('%m-%d', timestamp) DATE from rawdata" + last30DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select SUM(COUNT) VOLUME, strftime('%m-%d', timestamp) DATE from rawdata" + last30DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
 				break;
 			case ALL:
-				command = "select round(avg(COUNT), 2) AVG_VOLUME, strftime('%m-%d', timestamp) DATE from rawdata group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select SUM(COUNT) VOLUME, strftime('%m-%d', timestamp) DATE from rawdata group by strftime('%m-%d', timestamp) order by timestamp asc;";
 			default:
 				break;
 			}
@@ -49,10 +49,10 @@ public class TrafficVolumeDAO extends DBOperations {
 			resultSet = statement.executeQuery();
 			
 			while (resultSet.next()) {
-				Double average = resultSet.getDouble("AVG_VOLUME");
+				Double average = resultSet.getDouble("VOLUME");
 				String date = resultSet.getString("DATE");
 				
-				responseList.add(new AvgVolumeEntity(average, date));
+				responseList.add(new VolumeEntity(average, date));
 			}
 			
 			log.info("finished retrieving data");

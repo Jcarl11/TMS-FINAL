@@ -49,7 +49,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static org.opencv.imgproc.Imgproc.resize;
@@ -107,7 +109,7 @@ public class DashboardController {
     private int divisorCar = 1;
     private int divisorVan = 1;
     private int divisorLorry = 1;
-    private int divisorVehicle = 1;
+    private int divisorVehicle = 3;
     
     private int counter = 0;
     private int lastTSM = 0;
@@ -368,8 +370,6 @@ public class DashboardController {
 		        isStarted = true;
 		        resetButton.setDisable(false);
 		        
-		        //save application state to database
-		        dbUpdateCounters();
 			}
 			
 	        
@@ -596,6 +596,7 @@ public class DashboardController {
                 double avgSpeed = sumSpeedVehicle / divisorVehicle;
                 divisorVehicle++;
                 
+                dbUpdateCounters(1, avgSpeed);
                 Platform.runLater(()->{
                 	avgSpeedTextField.setText(String.format("%.2f", avgSpeed));
                 });
@@ -673,28 +674,30 @@ public class DashboardController {
         }
     }
     
-    private void dbUpdateCounters() {
-		Runnable countGrab = new Runnable() {
+    private void dbUpdateCounters(int count, double avgSpeed) {
+		Runnable dbUpdate = new Runnable() {
 			@Override
 			public void run() {
 				Date date = new Date();
-				String count = quantityTextField.getText().trim();
-				String avgSpeed = avgSpeedTextField.getText().trim();
+
 				String currentDateTime = dateFormat.format(date);
 				String day = currentDay.format(date);
-				String trafficFlowType = "";
+				String facilityType = "";
 				
 				if (interruptedCheckBox.isSelected())
-					trafficFlowType = "Interrupted";
+					facilityType = "Interrupted";
 				else
-					trafficFlowType = "Uninterrupted";
+					facilityType = "Uninterrupted";
 				
 				log.info("updating database counters");
-				db.insert(count, avgSpeed, currentDateTime, day, areaTextField.getText().toUpperCase(), trafficFlowType);
+				db.insert(count, avgSpeed, currentDateTime, areaTextField.getText().toUpperCase(), facilityType);
 			}
 		};
-		GlobalObjects.getInstance().grabber = Executors.newSingleThreadScheduledExecutor();
-		GlobalObjects.getInstance().grabber.scheduleAtFixedRate(countGrab, 0, intervals, unit);
+		
+		ExecutorService executor = Executors.newFixedThreadPool(5);
+		executor.submit(dbUpdate);
+		executor.shutdown();
+		
 	}
       
 }

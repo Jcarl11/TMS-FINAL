@@ -2,7 +2,7 @@ package org.tms;
 
 import org.tms.db.TaskExecutor;
 import org.tms.entities.AvgSpeedEntity;
-import org.tms.entities.AvgVolumeEntity;
+import org.tms.entities.VolumeEntity;
 import org.tms.entities.LevelOfServiceEntity;
 import org.tms.entities.RecordEntity;
 import org.tms.model.Period;
@@ -50,11 +50,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import org.asynchttpclient.Response;
 import org.slf4j.Logger;
@@ -71,11 +73,17 @@ public class ReportsController implements Initializable {
 	@FXML
 	private AnchorPane mainAnchorPain;
 	@FXML
+	private TabPane mainTabPane;
+	@FXML
 	private JFXButton refreshButton, publishButton;
 	@FXML
 	private ProgressIndicator progress_reports;
 	@FXML
-	private TableView lvlOfServiceTableView;
+	private TableView<LevelOfServiceEntityFX> lvlOfServiceTableView;
+	@FXML
+	private Tab volumeTab;
+	@FXML
+	private Tab lvlOfServiceTab;
 	@FXML
 	private Tab avgSpeedTab;
 	@FXML
@@ -92,13 +100,22 @@ public class ReportsController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		
-		initAvgVolumeReport();
+		initVolumeReport();
 		initLevelsOfServiceReport();
 		initAvgSpeedReport();
 	}
 
 	@FXML
 	private void handleRefreshButtonAction(ActionEvent event) {
+		log.debug("active tab: " + mainTabPane.getSelectionModel().getSelectedIndex());
+		int activeTab = mainTabPane.getSelectionModel().getSelectedIndex();
+		if (activeTab == 0) {
+			generateVolumeChart();			
+		} else if (activeTab == 1) {
+			generateLevelsOfServiceTable();
+		} else if (activeTab == 2) {
+			generateAvgSpeedChart();
+		}
 	}
 
 	@FXML
@@ -125,14 +142,14 @@ public class ReportsController implements Initializable {
 	private void handleLvlOfServiceDatePickerAction() {
 		log.debug("DatePicker: " + lvlOfServiceDatePicker.getValue().toString());
 		
-		generateLevelsOfServiceTable(lvlOfServiceDatePicker.getValue().toString());
+		generateLevelsOfServiceTable();
 	}
 	
 	@FXML
 	private void handleAvgVolComboBoxAction(ActionEvent event) throws IOException {
 		
 		log.debug("Period: " + avgVolComboBox.getValue());
-		generateAvgVolumeChart();
+		generateVolumeChart();
 		
 	}
 	
@@ -143,14 +160,14 @@ public class ReportsController implements Initializable {
 
 	}
 	
-	public void initAvgVolumeReport() {
+	public void initVolumeReport() {
 		log.info("entry");
 		
 		ObservableList<String> options = 
 			    FXCollections.observableArrayList(Period.ALL.getPeriod(), Period.LAST_7_DAYS.getPeriod(), Period.LAST_30_DAYS.getPeriod());
 		avgVolComboBox.getItems().addAll(options);
 		avgVolComboBox.setValue(options.get(1));
-		generateAvgVolumeChart();
+		generateVolumeChart();
 		
 		log.info("exit");
 	}
@@ -158,7 +175,7 @@ public class ReportsController implements Initializable {
 	public void initLevelsOfServiceReport() {
 		lvlOfServiceDatePicker.setValue(LocalDate.now());
 		log.debug("DatePicker: " + lvlOfServiceDatePicker.getValue().toString());
-		generateLevelsOfServiceTable(lvlOfServiceDatePicker.getValue().toString());
+		generateLevelsOfServiceTable();
 	}
 	
 	public void initAvgSpeedReport() {
@@ -174,29 +191,29 @@ public class ReportsController implements Initializable {
 		log.info("exit");
 	}
 	
-	public void generateAvgVolumeChart() {
-		ArrayList<AvgVolumeEntity> avgVolumeEntityList = new ArrayList<AvgVolumeEntity>();
+	public void generateVolumeChart() {
+		ArrayList<VolumeEntity> volumeEntityList = new ArrayList<VolumeEntity>();
 		trafficVolumeDAO = new TrafficVolumeDAO();
 		XYChart.Series<Double, String> series = new XYChart.Series<Double, String>();
-		avgVolumeEntityList = trafficVolumeDAO.getAvgVolume(avgVolComboBox.getValue());
+		volumeEntityList = trafficVolumeDAO.getVolumePerHour(avgVolComboBox.getValue());
 		
 		//Defining the y axis   
 		avgVolChartAnchorPane.getChildren().clear();
 		CategoryAxis xAxis = new CategoryAxis (); 
 		xAxis.setLabel("Daily"); 		
 		
-		NumberAxis yAxis = new NumberAxis(0, 1000, 20); 
-		yAxis.setLabel("Average Volume"); 
+		NumberAxis yAxis = new NumberAxis(0, 10000, 10); 
+		yAxis.setLabel("Number of Vehicles"); 
 		LineChart lineChart = new LineChart(xAxis, yAxis);
 		lineChart.setPrefWidth(700);
 		lineChart.setPrefHeight(370);
 
 		//Prepare XYChart.Series objects by setting data 
-		series.setName("Average volume of vehicles per day");
-		avgVolumeEntityList.forEach(avgVolumeEntity -> {
+		series.setName("Volume of vehicles per day");
+		volumeEntityList.forEach(volumeEntity -> {
 			log.debug("-----------------------");
-			log.debug("date: " + avgVolumeEntity.date + " avgVolume: " + avgVolumeEntity.avgVolume);
-			series.getData().add(new XYChart.Data(avgVolumeEntity.date, avgVolumeEntity.avgVolume)); 
+			log.debug("date: " + volumeEntity.date + " volume: " + volumeEntity.volume);
+			series.getData().add(new XYChart.Data(volumeEntity.date, volumeEntity.volume)); 
 		});
 
 		//Setting the data to Line chart  
@@ -254,19 +271,19 @@ public class ReportsController implements Initializable {
 		avgSpdChartAnchorPane.getChildren().add(avgSpdChartGroup);
 	}
 	
-	public void generateLevelsOfServiceTable(String period) {
+	public void generateLevelsOfServiceTable() {
 		log.info("entry");
 		
 		// clear table
 		lvlOfServiceTableView.getColumns().clear();
 		ArrayList<LevelOfServiceEntity> levelOfServiceEntityList = new ArrayList<LevelOfServiceEntity>();
 		TrafficLevelOfServiceDAO trafficLevelOfServiceDAO = new TrafficLevelOfServiceDAO();
-		levelOfServiceEntityList = trafficLevelOfServiceDAO.getAvgVolumePerHour(period);
+		levelOfServiceEntityList = trafficLevelOfServiceDAO.getVolumePerHour(lvlOfServiceDatePicker.getValue().toString());
 		
 		ArrayList<LevelOfServiceEntityFX> levelOfServiceEntityListFX = new ArrayList<LevelOfServiceEntityFX>();
 		levelOfServiceEntityList.forEach(levelOfServiceEntity -> {
 			levelOfServiceEntityListFX.add(new LevelOfServiceEntityFX(levelOfServiceEntity.hour, 
-					Double.toString(levelOfServiceEntity.avgVolume), levelOfServiceEntity.facility, levelOfServiceEntity.facilityType, levelOfServiceEntity.lvlOfService)); 
+					Double.toString(levelOfServiceEntity.volume), Double.toString(levelOfServiceEntity.avgSpeed), levelOfServiceEntity.facility, levelOfServiceEntity.facilityType, levelOfServiceEntity.lvlOfService)); 
 		});
 		ObservableList<LevelOfServiceEntityFX> tableData =
 				FXCollections.observableArrayList(levelOfServiceEntityListFX);
@@ -274,27 +291,64 @@ public class ReportsController implements Initializable {
 		TableColumn hourCol = new TableColumn("Hour");
         TableColumn facilityCol = new TableColumn("Facility");
         TableColumn facilityTypeCol = new TableColumn("Facility type");
-        TableColumn avgVolumeCol = new TableColumn("Average Volume");
+        TableColumn volumeCol = new TableColumn("Volume");
+        TableColumn avgSpeedCol = new TableColumn("Average speed");
         TableColumn lvlOfServiceCol = new TableColumn("Level of service");
         
-        hourCol.setCellValueFactory(
-				new PropertyValueFactory<LevelOfServiceEntity,String>("hour")
-				);
-        facilityCol.setCellValueFactory(
-				new PropertyValueFactory<LevelOfServiceEntity,String>("facility")
-				);
-        facilityTypeCol.setCellValueFactory(
-				new PropertyValueFactory<LevelOfServiceEntity,String>("facilityType")
-				);
-        avgVolumeCol.setCellValueFactory(
-				new PropertyValueFactory<LevelOfServiceEntity,String>("avgVolume")
-				);
-        lvlOfServiceCol.setCellValueFactory(
-				new PropertyValueFactory<LevelOfServiceEntity,String>("lvlOfService")
-				);
+        lvlOfServiceTableView.getColumns().addAll(hourCol, facilityCol, facilityTypeCol, volumeCol, avgSpeedCol, lvlOfServiceCol);
+        
+//        hourCol.setCellValueFactory(
+//				new PropertyValueFactory<LevelOfServiceEntity,String>("hour")
+//				);
+//        facilityCol.setCellValueFactory(
+//				new PropertyValueFactory<LevelOfServiceEntity,String>("facility")
+//				);
+//        facilityTypeCol.setCellValueFactory(
+//				new PropertyValueFactory<LevelOfServiceEntity,String>("facilityType")
+//				);
+//        volumeCol.setCellValueFactory(
+//				new PropertyValueFactory<LevelOfServiceEntity,String>("volume")
+//				);
+//        lvlOfServiceCol.setCellValueFactory(
+//				new PropertyValueFactory<LevelOfServiceEntity,String>("lvlOfService")
+//				);
+        
+        hourCol.setCellValueFactory(cellData -> ((TableColumn.CellDataFeatures<LevelOfServiceEntityFX, Object>)cellData).getValue().hourProperty());
+        volumeCol.setCellValueFactory(cellData -> ((TableColumn.CellDataFeatures<LevelOfServiceEntityFX, Object>)cellData).getValue().volumeProperty());
+        avgSpeedCol.setCellValueFactory(cellData -> ((TableColumn.CellDataFeatures<LevelOfServiceEntityFX, Object>)cellData).getValue().avgSpeedProperty());
+        facilityCol.setCellValueFactory(cellData -> ((TableColumn.CellDataFeatures<LevelOfServiceEntityFX, Object>)cellData).getValue().facilityProperty());
+        facilityTypeCol.setCellValueFactory(cellData -> ((TableColumn.CellDataFeatures<LevelOfServiceEntityFX, Object>)cellData).getValue().facilityTypeProperty());
+        lvlOfServiceCol.setCellValueFactory(cellData -> ((TableColumn.CellDataFeatures<LevelOfServiceEntityFX, Object>)cellData).getValue().lvlOfServiceProperty());
+        lvlOfServiceCol.setCellFactory(column -> {
+            return new TableCell<LevelOfServiceEntity, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    // Style all dates in March with a different color.
+                    log.debug("item: " + item);
+                    if (item == null || empty) {
+						setText(null);
+						setStyle("");
+                    } else {
+                    	setText(item);
+                    	 if (item == "FAILED") {
+                         	setTextFill(Color.RED);
+                         	//                            setStyle("-fx-background-color: red");
+                         } else if (item == "EXCELLENT"){
+                         	setTextFill(Color.BLUE);
+                         	//                            setStyle("-fx-background-color: lightgreen");
+                         } else {
+                        	 setTextFill(Color.GREEN);
+                         }
+                    }
+                   
+                }
+            };
+        });
         
         lvlOfServiceTableView.setItems(tableData);
-        lvlOfServiceTableView.getColumns().addAll(hourCol, facilityCol, facilityTypeCol, avgVolumeCol, lvlOfServiceCol);
+        
 // 
 //        final VBox vbox = new VBox();
 //        vbox.setSpacing(5);

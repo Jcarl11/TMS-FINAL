@@ -38,13 +38,13 @@ public class TrafficSpeedDAO extends DBOperations {
 			log.debug(Period.fromValue(period).toString());
 			switch (Period.fromValue(period)) {
 			case LAST_7_DAYS:
-				command = "select round(avg(avg_speed), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata" + last7DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select round(avg(SPEED), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata" + last7DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
 				break;
 			case LAST_30_DAYS:
-				command = "select round(avg(avg_speed), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata" + last30DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select round(avg(SPEED), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata" + last30DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
 				break;
 			case ALL:
-				command = "select round(avg(avg_speed), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select round(avg(SPEED), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata group by strftime('%m-%d', timestamp) order by timestamp asc;";
 			default:
 				break;
 			}

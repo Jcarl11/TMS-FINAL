@@ -20,7 +20,7 @@ final Logger log = LoggerFactory.getLogger(TrafficSpeedDAO.class);
 	private ResultSet resultSet = null;
 	private ArrayList<LevelOfServiceEntity> responseList = new ArrayList<LevelOfServiceEntity>();
 	
-	public ArrayList<LevelOfServiceEntity> getAvgVolumePerHour(String period) {
+	public ArrayList<LevelOfServiceEntity> getVolumePerHour(String period) {
 		try {
 			
 			log.info("retrieving db data");
@@ -28,7 +28,7 @@ final Logger log = LoggerFactory.getLogger(TrafficSpeedDAO.class);
 			statement = getStatement();
 			connection = getConnection();
 			resultSet = getResultSet();
-			String command = "select strftime('%H', timestamp) HOUR, round(avg(COUNT), 2) AVG_VOLUME, FACILITY, FACILITY_TYPE from rawdata "
+			String command = "select strftime('%H', timestamp) HOUR, SUM(COUNT) VOLUME, round(AVG(SPEED), 2) AVG_SPEED, FACILITY, FACILITY_TYPE from rawdata "
 					+ "where strftime('%Y-%m-%d', timestamp) = '" + period + "' group by HOUR order by timestamp asc;";
 			log.debug("command: " + command);
 			statement = connection.prepareStatement(command);
@@ -36,11 +36,12 @@ final Logger log = LoggerFactory.getLogger(TrafficSpeedDAO.class);
 			
 			while (resultSet.next()) {
 				String hour = resultSet.getString("HOUR");
-				double avgVolume = resultSet.getDouble("AVG_VOLUME");
+				int volume = resultSet.getInt("VOLUME");
+				double avgSpeed = resultSet.getDouble("AVG_SPEED");
 				String facility = resultSet.getString("FACILITY");
 				String facilityType = resultSet.getString("FACILITY_TYPE");
-				String lvlOfService = Utils.getLevelOfService(avgVolume);
-				responseList.add(new LevelOfServiceEntity(hour, avgVolume, facility, facilityType, lvlOfService));
+				String lvlOfService = Utils.getLevelOfService(avgSpeed);
+				responseList.add(new LevelOfServiceEntity(hour, volume, avgSpeed, facility, facilityType, lvlOfService));
 			}
 			
 			log.info("finished retrieving data");

@@ -12,22 +12,20 @@ import org.tms.DashboardController;
 
 public class Utils {
 	final static Logger log = LoggerFactory.getLogger(Utils.class);
-	public static String getLevelOfService(Double value) {
+	public static String getLevelOfService(double value) {
 		String los = "";
-		if (value >= 0 && value <= 100)
-			los = "A";
-		else if (value > 100 && value <= 200)
-			los = "B";
-		else if (value > 200 && value <= 300)
-			los = "C";
-		else if (value > 300 && value <= 400)
-			los = "D";
-		else if (value > 400 && value <= 500)
-			los = "E";
-		else if (value > 500)
-			los = "F";
+		if (value >= 40)
+			los = "EXCELLENT";
+		else if (value >= 30 && value < 40)
+			los = "GOOD";
+		else if (value >= 20 && value < 30)
+			los = "FAIR";
+		else if (value >= 15 && value < 20)
+			los = "PASSED";
+		else if (value < 15)
+			los = "FAILED";
 		else
-			los = "Unmeasurable";
+			los = "INVALID";
 		return los;
 	}
 	
