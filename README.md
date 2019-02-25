@@ -55,3 +55,10 @@ curl "https://api.mockaroo.com/api/fe841400?count=1000&key=e2b92d20" > "TMS.sql"
 
 Run project
 
+## Run executable jar file
+Add OpenCV native libraries to your environment variable $PATH.
+
+Open windows, open cmd prompt
+cd TrafficMonitoringSystem/dist
+
+RUN java -jar tms.jar
