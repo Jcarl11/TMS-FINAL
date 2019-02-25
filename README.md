@@ -56,9 +56,11 @@ curl "https://api.mockaroo.com/api/fe841400?count=1000&key=e2b92d20" > "TMS.sql"
 Run project
 
 ## Run executable jar file
-Add OpenCV native libraries to your environment variable $PATH.
+Add OpenCV native library path to your environment variable $PATH. 
+Windows > right click Computer > Properties > Advanced System Settings > Enviroment variables > System variables > PATH
+In my case,  C:\opencv-343\build\java\x64.
 
-Open windows, open cmd prompt
+On windows, open cmd prompt
 
 ```bash
 cd TrafficMonitoringSystem/dist
