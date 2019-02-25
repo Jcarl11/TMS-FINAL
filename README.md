@@ -59,6 +59,12 @@ Run project
 Add OpenCV native libraries to your environment variable $PATH.
 
 Open windows, open cmd prompt
-cd TrafficMonitoringSystem/dist
 
-RUN java -jar tms.jar
+```bash
+cd TrafficMonitoringSystem/dist
+```
+RUN 
+
+```bash
+java -jar tms.jar
+```
