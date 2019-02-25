@@ -25,7 +25,7 @@ import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tms.db.localdb.DBOperations;
-import org.tms.db.localdb.RetrieveDaysAverage;
+import org.tms.db.localdb.TrafficVolumeDAO;
 import org.tms.utilities.GlobalObjects;
 
 import com.jfoenix.controls.JFXRadioButton;
@@ -129,7 +129,7 @@ public class DashboardController {
     
     
     //DB operations
-    DBOperations db = new RetrieveDaysAverage();
+    DBOperations db = new TrafficVolumeDAO();
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	DateFormat currentDay = new SimpleDateFormat("EEEE");
 	int intervals = 5; // 5seconds

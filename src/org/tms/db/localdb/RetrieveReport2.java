@@ -35,7 +35,7 @@ public class RetrieveReport2 extends DBOperations {
 			statement = getStatement();
 			connection = getConnection();
 			resultSet = getResultSet();
-			String command = "SELECT AVG(COUNT) AS 'AVERAGE', FACILITY, FACILTYTYPE FROM RAWDATA WHERE strftime('%H',TIMESTAMP) = '"
+			String command = "SELECT AVG(COUNT) AS 'AVERAGE', FACILITY, FACILITY_TYPE FROM RAWDATA WHERE strftime('%H',TIMESTAMP) = '"
 					+ hour + "' ";
 			statement = connection.prepareStatement(command);
 			resultSet = statement.executeQuery();
@@ -44,7 +44,7 @@ public class RetrieveReport2 extends DBOperations {
 				if (average != null) {
 					recordEntity.setTime(String.valueOf(hour));
 					recordEntity.setFacility(resultSet.getString("FACILITY"));
-					recordEntity.setFacilityType(resultSet.getString("FACILTYTYPE"));
+					recordEntity.setFacilityType(resultSet.getString("FACILITY_TYPE"));
 					recordEntity.setLevelOfService(GlobalObjects.getInstance().categorizeLOS(average));
 					recordEntityList.add(recordEntity);
 				}
@@ -63,7 +63,7 @@ public class RetrieveReport2 extends DBOperations {
 			statement = getStatement();
 			connection = getConnection();
 			resultSet = getResultSet();
-			String command = "SELECT AVG(COUNT) AS 'AVERAGE', TIMESTAMP, FACILITY, FACILTYTYPE FROM RAWDATA WHERE strftime('%H',TIMESTAMP) = '"
+			String command = "SELECT AVG(COUNT) AS 'AVERAGE', TIMESTAMP, FACILITY, FACILITY_TYPE FROM RAWDATA WHERE strftime('%H',TIMESTAMP) = '"
 					+ hour + "' ";
 			statement = connection.prepareStatement(command);
 			resultSet = statement.executeQuery();
@@ -75,7 +75,7 @@ public class RetrieveReport2 extends DBOperations {
 					// recordEntity.setTime(String.valueOf(hour));
 					recordEntity.setTime(GlobalObjects.getInstance().convertDateToIso(timestamp));
 					recordEntity.setFacility(resultSet.getString("FACILITY"));
-					recordEntity.setFacilityType(resultSet.getString("FACILTYTYPE"));
+					recordEntity.setFacilityType(resultSet.getString("FACILITY_TYPE"));
 					recordEntity.setLevelOfService(GlobalObjects.getInstance().categorizeLOS(average));
 					recordEntityList.add(recordEntity);
 				}

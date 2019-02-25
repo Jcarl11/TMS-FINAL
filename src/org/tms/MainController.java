@@ -3,7 +3,7 @@ package org.tms;
 import org.tms.db.DatabaseOperation;
 import org.tms.db.TaskExecutor;
 import org.tms.db.localdb.DBOperations;
-import org.tms.db.localdb.RetrieveDaysAverage;
+import org.tms.db.localdb.TrafficVolumeDAO;
 import org.tms.utilities.GlobalObjects;
 import org.tms.utilities.UsersPreferences;
 import com.jfoenix.controls.JFXButton;
@@ -57,7 +57,7 @@ public class MainController implements Initializable {
 	TimeUnit unit = TimeUnit.SECONDS;
 	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	DateFormat currentDay = new SimpleDateFormat("EEEE");
-	DBOperations db = new RetrieveDaysAverage();
+	DBOperations db = new TrafficVolumeDAO();
 	boolean cameraActive = false;
 	int carCount = 0;
 	Point linePoint1 = new Point(50, 100);
