@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry excluding="test/resources/|resources/|resources/" kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/opencv-343/build/java/opencv-343.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/opencv-343/build/java/x64"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/sqlite-jdbc-3.23.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/jfoenix-8.0.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-common-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/fontawesomefx-8.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-codec-http-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-transport-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/async-http-client-2.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-handler-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-codec-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-buffer-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-transport-native-epoll-4.1.30.Final-linux-x86_64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-resolver-dns-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-codec-socks-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/javax.activation-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/json-20180130.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-codec-dns-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-transport-native-unix-common-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-resolver-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-handler-proxy-4.1.30.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/netty-reactive-streams-2.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/slf4j-simple-1.7.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/async-http-client-netty-utils-2.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/async-http-client-example-2.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/external-jars/reactive-streams-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dominjav/repo/github/TrafficMonitoringSystem/third-party/config"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
