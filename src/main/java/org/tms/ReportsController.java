@@ -63,6 +63,10 @@ public class ReportsController implements Initializable {
 	@FXML
 	private Tab avgSpeedTab;
 	@FXML
+	private ComboBox<String> areaComboBox;
+	@FXML
+	private ComboBox<String> areaComboBox1;
+	@FXML
 	private ComboBox<String> avgVolComboBox;
 	@FXML
 	private AnchorPane avgVolChartAnchorPane;
@@ -138,11 +142,24 @@ public class ReportsController implements Initializable {
 	
 	public void initVolumeReport() {
 		log.info("entry");
+		TrafficVolumeDAO trafficVolumeDAO = null;
+		try {
+			trafficVolumeDAO = new TrafficVolumeDAO();
+		} catch (ConnectException e) {
+			e.printStackTrace();
+		}
+		ArrayList<String> areaList = new ArrayList<String>();
+
+		areaList = trafficVolumeDAO.getAreaList();
+
+		areaComboBox.getItems().addAll(areaList);
+		areaComboBox.setValue(areaList.get(0));
 		
 		ObservableList<String> options = 
 			    FXCollections.observableArrayList(Period.ALL.getPeriod(), Period.LAST_7_DAYS.getPeriod(), Period.LAST_30_DAYS.getPeriod());
 		avgVolComboBox.getItems().addAll(options);
 		avgVolComboBox.setValue(options.get(1));
+
 		generateVolumeChart();
 		
 		log.info("exit");
@@ -156,6 +173,18 @@ public class ReportsController implements Initializable {
 	
 	public void initAvgSpeedReport() {
 		log.info("entry");
+		TrafficVolumeDAO trafficVolumeDAO = null;
+		try {
+			trafficVolumeDAO = new TrafficVolumeDAO();
+		} catch (ConnectException e) {
+			e.printStackTrace();
+		}
+		ArrayList<String> areaList = new ArrayList<String>();
+
+		areaList = trafficVolumeDAO.getAreaList();
+
+		areaComboBox1.getItems().addAll(areaList);
+		areaComboBox1.setValue(areaList.get(0));
 				
 		ObservableList<String> options = 
 			    FXCollections.observableArrayList(Period.ALL.getPeriod(), Period.LAST_7_DAYS.getPeriod(), Period.LAST_30_DAYS.getPeriod());
@@ -176,7 +205,7 @@ public class ReportsController implements Initializable {
 		}
 		ArrayList<VolumeEntity> volumeEntityList = new ArrayList<VolumeEntity>();
 		XYChart.Series<Double, String> series = new XYChart.Series<Double, String>();
-		volumeEntityList = trafficVolumeDAO.getVolumePerHour(avgVolComboBox.getValue());
+		volumeEntityList = trafficVolumeDAO.getVolumePerHour(avgVolComboBox.getValue(), areaComboBox.getValue());
 		
 		//Defining the y axis   
 		avgVolChartAnchorPane.getChildren().clear();
@@ -219,7 +248,7 @@ public class ReportsController implements Initializable {
 
 		ArrayList<AvgSpeedEntity> avgSpeedEntityList = new ArrayList<AvgSpeedEntity>();
 		XYChart.Series<Double, String> series = new XYChart.Series<Double, String>();
-		avgSpeedEntityList = trafficSpeedDAO.getAvgSpeed(avgSpdComboBox.getValue());
+		avgSpeedEntityList = trafficSpeedDAO.getAvgSpeed(avgSpdComboBox.getValue(), areaComboBox1.getValue());
 		ArrayList<String> categories = new ArrayList<String>();
 		
 		//Defining the y axis   

@@ -21,15 +21,14 @@ public class TrafficVolumeDAO extends BaseDao {
 	}
 	final Logger log = LoggerFactory.getLogger(TrafficVolumeDAO.class);
 	
-	private ArrayList<VolumeEntity> responseList = new ArrayList<VolumeEntity>();
-	
-	public ArrayList<VolumeEntity> getVolumePerHour(String period) {
+	public ArrayList<VolumeEntity> getVolumePerHour(String period, String facility) {
+		ArrayList<VolumeEntity> responseList = new ArrayList<VolumeEntity>();
 		try {
 			
 			log.info("retrieving db data");
 			String command = "";
-			String last7DaysFilter = " where timestamp between (SELECT DATETIME('now', '-7 day')) and (SELECT date('now', '1 day')) ";
-			String last30DaysFilter = " where timestamp between (SELECT DATETIME('now', '-30 day')) and (SELECT date('now', '1 day')) ";
+			String last7DaysFilter = " where facility ='" + facility + "' and timestamp between (SELECT DATETIME('now', '-7 day')) and (SELECT date('now', '1 day')) ";
+			String last30DaysFilter = " where facility ='" + facility + "' and timestamp between (SELECT DATETIME('now', '-30 day')) and (SELECT date('now', '1 day')) ";
 			log.debug(Period.fromValue(period).toString());
 			switch (Period.fromValue(period)) {
 			case LAST_7_DAYS:
@@ -39,7 +38,7 @@ public class TrafficVolumeDAO extends BaseDao {
 				command = "select SUM(COUNT) VOLUME, strftime('%m-%d', timestamp) DATE from rawdata" + last30DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
 				break;
 			case ALL:
-				command = "select SUM(COUNT) VOLUME, strftime('%m-%d', timestamp) DATE from rawdata group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select SUM(COUNT) VOLUME, strftime('%m-%d', timestamp) DATE from rawdata where facility ='" + facility + "' group by strftime('%m-%d', timestamp) order by timestamp asc;";
 			default:
 				break;
 			}
@@ -70,6 +69,40 @@ public class TrafficVolumeDAO extends BaseDao {
 		
 		return responseList;
 
+	}
+
+	public ArrayList<String> getAreaList() {
+		ArrayList<String> responseList = new ArrayList<String>();
+		try {
+
+			log.info("retrieving db data");
+			String command = "SELECT DISTINCT facility FROM RAWDATA";
+
+
+			log.debug("command: " + command);
+			prepareStatement(command);
+			ResultSet rs = executeQuery();
+
+			while (rs.next()) {
+				String area = rs.getString("FACILITY");
+
+				responseList.add(area);
+			}
+
+			log.info("finished retrieving data");
+
+		} catch (SQLException e) {
+			log.error("SQLException : " + e.getMessage());
+		} finally {
+			try {
+				log.debug("Closing resources...");
+				closeResources();
+				closeConnection();
+			} catch (Exception e) {
+			}
+		}
+
+		return responseList;
 	}
 
 }

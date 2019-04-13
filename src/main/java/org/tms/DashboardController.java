@@ -331,7 +331,6 @@ public class DashboardController {
 		Stage stage = new Stage();
 		stage.setScene(scene);
 		stage.setTitle("Reports");
-//		if (UsersPreferences.getInstance().getPreference().get("sessionToken", null) != null)
 		log.info("show reports.");
 		stage.show();
 	}
