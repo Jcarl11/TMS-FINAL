@@ -51,8 +51,7 @@ public class RawDataDAO extends BaseDao {
             int st2 = executeUpdate();
 
             log.debug(" executeUpdate st 2 : " + st2);
-
-
+            
         } catch (SQLException e) {
             log.error("SQLException : " + e.getMessage());
         } finally {
