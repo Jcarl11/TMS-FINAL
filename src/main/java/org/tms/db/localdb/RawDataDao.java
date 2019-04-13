@@ -9,16 +9,17 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
-public class RawDataDao extends BaseDao {
-    private final Logger log = LoggerFactory.getLogger(BaseDao.class);
-    public RawDataDao() throws ConnectException {
+public class RawDataDAO extends BaseDao {
+    private final Logger log = LoggerFactory.getLogger(RawDataDAO.class);
+    public RawDataDAO() throws ConnectException {
         super();
     }
 
-    public RawDataDao(Connection conn) {
+    public RawDataDAO(Connection conn) {
         super(conn);
     }
-    public void insert(int count, double avgSpeed, String timeStamp, String facility, String facilityType) {
+
+    public void addRawData(int count, double avgSpeed, String timeStamp, String facility, String facilityType) {
         try {
             log.info("insert data");
 
@@ -37,11 +38,9 @@ public class RawDataDao extends BaseDao {
             setString(5, facility);
             setString(6, facilityType);
 
-            executeUpdate();
-
             int st = executeUpdate();
 
-            log.debug(" executeUpdate st : " + st);
+            log.debug(" executeUpdate st 1: " + st);
 
             String insertSyncTableSQL = "insert into sync(RAW_DATA_ID, SYNCED)values(?,?);";
             prepareStatement(insertSyncTableSQL);
@@ -51,7 +50,7 @@ public class RawDataDao extends BaseDao {
 
             int st2 = executeUpdate();
 
-            log.debug(" executeUpdate st : " + st2);
+            log.debug(" executeUpdate st 2 : " + st2);
 
 
         } catch (SQLException e) {
@@ -60,6 +59,7 @@ public class RawDataDao extends BaseDao {
             try {
                 log.debug("Closing resources...");
                 closeResources();
+                log.debug("Closing connection...");
                 closeConnection();
             } catch (Exception e) {
             }
