@@ -28,6 +28,7 @@ final Logger log = LoggerFactory.getLogger(TrafficSpeedDAO.class);
 		try {
 			
 			log.info("retrieving db data");
+			log.debug("period: " + period);
 			String command = "select strftime('%H', timestamp) HOUR, SUM(COUNT) VOLUME, round(AVG(SPEED), 2) AVG_SPEED, FACILITY, FACILITY_TYPE from rawdata "
 					+ "where strftime('%Y-%m-%d', timestamp) = '" + period + "' group by HOUR order by timestamp asc;";
 			log.debug("command: " + command);
@@ -57,6 +58,80 @@ final Logger log = LoggerFactory.getLogger(TrafficSpeedDAO.class);
 			}
 		}
 		
+		return responseList;
+
+	}
+
+	public ArrayList<LevelOfServiceEntity> getTopTrafficVolume(String startPeriod, String endPeriod, int top) {
+		try {
+
+			log.info("retrieving db data");
+			log.debug("startPeriod: " + startPeriod);
+			log.debug("endPeriod: " + endPeriod);
+			String command = "select SUM(COUNT) VOLUME, round(AVG(SPEED), 2) AVG_SPEED, FACILITY, FACILITY_TYPE from rawdata "
+					+ "where strftime('%Y-%m-%d', timestamp) between '" + startPeriod +"' and '" + endPeriod + "' group by facility order by volume desc limit " + top + " ;";
+			log.debug("command: " + command);
+			prepareStatement(command);
+			ResultSet rs = executeQuery();
+
+			while (rs.next()) {
+				int volume = rs.getInt("VOLUME");
+				double avgSpeed = rs.getDouble("AVG_SPEED");
+				String facility = rs.getString("FACILITY");
+				String facilityType = rs.getString("FACILITY_TYPE");
+				responseList.add(new LevelOfServiceEntity(volume, avgSpeed, facility, facilityType));
+			}
+
+			log.info("finished retrieving data");
+
+		} catch (SQLException e) {
+			log.error("SQLException : " + e.getMessage());
+		} finally {
+			try {
+				log.debug("Closing resources...");
+				closeResources();
+				closeConnection();
+			} catch (Exception e) {
+			}
+		}
+
+		return responseList;
+
+	}
+
+	public ArrayList<LevelOfServiceEntity> getTopTrafficSpeed(String startPeriod, String endPeriod, int top) {
+		try {
+
+			log.info("retrieving db data");
+			log.debug("startPeriod: " + startPeriod);
+			log.debug("endPeriod: " + endPeriod);
+			String command = "select SUM(COUNT) VOLUME, round(AVG(SPEED), 2) AVG_SPEED, FACILITY, FACILITY_TYPE from rawdata "
+					+ "where strftime('%Y-%m-%d', timestamp) between '" + startPeriod +"' and '" + endPeriod + "' group by facility order by avg_speed asc limit " + top + " ;";
+			log.debug("command: " + command);
+			prepareStatement(command);
+			ResultSet rs = executeQuery();
+
+			while (rs.next()) {
+				int volume = rs.getInt("VOLUME");
+				double avgSpeed = rs.getDouble("AVG_SPEED");
+				String facility = rs.getString("FACILITY");
+				String facilityType = rs.getString("FACILITY_TYPE");
+				responseList.add(new LevelOfServiceEntity(volume, avgSpeed, facility, facilityType));
+			}
+
+			log.info("finished retrieving data");
+
+		} catch (SQLException e) {
+			log.error("SQLException : " + e.getMessage());
+		} finally {
+			try {
+				log.debug("Closing resources...");
+				closeResources();
+				closeConnection();
+			} catch (Exception e) {
+			}
+		}
+
 		return responseList;
 
 	}

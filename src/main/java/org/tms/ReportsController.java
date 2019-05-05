@@ -7,8 +7,12 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.print.PrinterJob;
 import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -16,6 +20,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +37,7 @@ import org.tms.model.Period;
 import org.tms.model.jfxbeans.LevelOfServiceEntityFX;
 import org.tms.utilities.GlobalObjects;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
@@ -51,7 +57,7 @@ public class ReportsController implements Initializable {
 	@FXML
 	private TabPane mainTabPane;
 	@FXML
-	private JFXButton refreshButton, publishButton;
+	private JFXButton refreshButton, toPdfButton;
 	@FXML
 	private ProgressIndicator progress_reports;
 	@FXML
@@ -76,13 +82,19 @@ public class ReportsController implements Initializable {
 	private AnchorPane avgSpdChartAnchorPane;
 	@FXML
 	private DatePicker lvlOfServiceDatePicker;
-	
+	@FXML
+	private DatePicker startDatePicker;
+	@FXML
+	private DatePicker endDatePicker;
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		
+
 		initVolumeReport();
 		initLevelsOfServiceReport();
 		initAvgSpeedReport();
+		initReport();
+
 	}
 
 	@FXML
@@ -99,23 +111,26 @@ public class ReportsController implements Initializable {
 	}
 
 	@FXML
-	private void handlePublishButtonAction(ActionEvent event) {
-		TaskExecutor.getInstance().publishReports();
-		GlobalObjects.getInstance().bindBtnNProgress(publishButton, progress_reports,
-				TaskExecutor.getInstance().getMyTask().runningProperty());
-		TaskExecutor.getInstance().getMyTask().setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				GlobalObjects.getInstance().showMessage("Publish done", mainAnchorPain);
-				Response response = (Response) TaskExecutor.getInstance().getMyTask().getValue();
-			}
-		});
-		TaskExecutor.getInstance().getMyTask().setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				GlobalObjects.getInstance().showMessage("Error", mainAnchorPain);
-			}
-		});
+	private void handleToPDFButtonAction(ActionEvent event) throws IOException {
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Document.fxml"));
+		Parent root = fxmlLoader.load();
+		DocumentController documentController = fxmlLoader.<DocumentController>getController();
+		documentController.initDocument(startDatePicker.getValue().toString(), endDatePicker.getValue().toString());
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.show();
+
+
+//		stage = (Stage) mainAnchorPain.getScene().getWindow();
+		PrinterJob job = PrinterJob.createPrinterJob();
+		if(job != null){
+			job.showPrintDialog(stage); // Window must be your main Stage
+			job.printPage(root);
+			job.endJob();
+		}
+
+
 	}
 	
 	@FXML
@@ -194,6 +209,11 @@ public class ReportsController implements Initializable {
 		generateAvgSpeedChart();
 	
 		log.info("exit");
+	}
+
+	public void initReport() {
+		startDatePicker.setValue(LocalDate.now());
+		endDatePicker.setValue(LocalDate.now());
 	}
 	
 	public void generateVolumeChart() {
