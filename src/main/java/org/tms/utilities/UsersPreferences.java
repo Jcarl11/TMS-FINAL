@@ -1,7 +1,8 @@
 package org.tms.utilities;
 
-import java.util.prefs.Preferences;
 import org.json.JSONObject;
+
+import java.util.prefs.Preferences;
 
 public class UsersPreferences {
 	private UsersPreferences() {

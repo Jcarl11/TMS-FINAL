@@ -21,16 +21,15 @@ public class TrafficSpeedDAO extends BaseDao {
 	}
 
 	final Logger log = LoggerFactory.getLogger(TrafficSpeedDAO.class);
-	
-	private ArrayList<AvgSpeedEntity> responseList = new ArrayList<AvgSpeedEntity>();
-	
-	public ArrayList<AvgSpeedEntity> getAvgSpeed(String period) {
+
+	public ArrayList<AvgSpeedEntity> getAvgSpeed(String period, String facility) {
+		ArrayList<AvgSpeedEntity> responseList = new ArrayList<AvgSpeedEntity>();
 		try {
 			
 			log.info("retrieving db data");
 			String command = "";
-			String last7DaysFilter = " where timestamp between (SELECT DATETIME('now', '-7 day')) and (SELECT date('now', '1 day')) ";
-			String last30DaysFilter = " where timestamp between (SELECT DATETIME('now', '-30 day')) and (SELECT date('now', '1 day')) ";
+			String last7DaysFilter = " where facility ='" + facility + "' and timestamp between (SELECT DATETIME('now', '-7 day')) and (SELECT date('now', '1 day')) ";
+			String last30DaysFilter = " where facility ='" + facility + "' and timestamp between (SELECT DATETIME('now', '-30 day')) and (SELECT date('now', '1 day')) ";
 			log.debug(Period.fromValue(period).toString());
 			switch (Period.fromValue(period)) {
 			case LAST_7_DAYS:
@@ -40,7 +39,7 @@ public class TrafficSpeedDAO extends BaseDao {
 				command = "select round(avg(SPEED), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata" + last30DaysFilter + "group by strftime('%m-%d', timestamp) order by timestamp asc;";
 				break;
 			case ALL:
-				command = "select round(avg(SPEED), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata group by strftime('%m-%d', timestamp) order by timestamp asc;";
+				command = "select round(avg(SPEED), 2) AVG_SPEED, strftime('%m-%d', timestamp) DATE from rawdata where facility = '" + facility + "' group by strftime('%m-%d', timestamp) order by timestamp asc;";
 			default:
 				break;
 			}

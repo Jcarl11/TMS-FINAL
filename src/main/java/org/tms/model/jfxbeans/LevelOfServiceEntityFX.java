@@ -20,6 +20,14 @@ public class LevelOfServiceEntityFX {
         this.facilityType = new SimpleStringProperty(facilityType);
         this.lvlOfService = new SimpleStringProperty(lvlOfService);
     }
+    public LevelOfServiceEntityFX(String volume, String avgSpeed, String facility) {
+        this.hour = null;
+        this.volume = new SimpleStringProperty(volume);
+        this.avgSpeed = new SimpleStringProperty(avgSpeed);
+        this.facility = new SimpleStringProperty(facility);
+        this.facilityType = null;
+        this.lvlOfService = null;
+    }
 
     public String getHour() {
         return hour.get();

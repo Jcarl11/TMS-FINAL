@@ -16,4 +16,10 @@ public class LevelOfServiceEntity {
 		this.facilityType = facilityType;
 		this.lvlOfService = lvlOfService;
 	}
+	public LevelOfServiceEntity(int volume, double avgSpeed, String facility, String facilityType) {
+		this.volume = volume;
+		this.avgSpeed = avgSpeed;
+		this.facility = facility;
+		this.facilityType = facilityType;
+	}
 }
