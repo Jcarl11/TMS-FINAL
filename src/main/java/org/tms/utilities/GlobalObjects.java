@@ -124,7 +124,7 @@ public class GlobalObjects {
 
 	public void openNewWindow(String fileName, String title, StageStyle stageStyle) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/trafficmonitoringsystem/" + fileName));
+			Parent root = FXMLLoader.load(getClass().getResource("/fxml/" + fileName));
 			Stage stage = new Stage();
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.initStyle(stageStyle);
@@ -133,7 +133,7 @@ public class GlobalObjects {
 			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent event) {
-					if (fileName == "LoginRegister.fxml") {
+					if (fileName == "Login.fxml") {
 						Platform.exit();
 						System.exit(0);
 					}

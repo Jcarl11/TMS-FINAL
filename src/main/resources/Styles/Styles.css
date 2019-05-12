@@ -1,0 +1,26 @@
+
+.root{
+    -fx-font-family: "Calibre Medium";
+}
+.custom-Text{
+    -fx-font: 25px "Calibre Medium";
+}
+.anchor-pane{
+    -fx-background-color: white;
+}
+.lower-dock{
+    -fx-background-color: white;
+}
+.text-header{
+    -fx-font: 15px Lato;
+}
+
+.jfx-snackbar-content {
+    -fx-background-color: #00ad3e;
+}
+.jfx-snackbar-toast {
+    -fx-text-fill: WHITE;
+    -fx-font: 12px Lato;
+    -fx-font-weight: bold;
+}
+

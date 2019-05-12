@@ -8,7 +8,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.opencv.core.Core;
 import org.slf4j.Logger;
@@ -30,6 +32,11 @@ public class TrafficMonitoringSystem extends Application {
 		 * loader.setController(new MainController()); BorderPane mainPane =
 		 * loader.load();
 		 */
+                Font.loadFont(getClass().getResourceAsStream("/resources/Styles/Calibre Medium.otf"), 14);
+                if(UsersPreferences.getInstance().getPreference().get("sessionToken", null) == null){
+                    GlobalObjects.getInstance().openNewWindow("Login.fxml", "Login", StageStyle.DECORATED);
+                    return;
+                }
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		log.info("native library loaded");
 		Parent root = FXMLLoader.load(getClass().getResource("/fxml/Dashboard.fxml"));
@@ -62,10 +69,7 @@ public class TrafficMonitoringSystem extends Application {
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.setTitle("Traffic Monitoring System");
-//		if (UsersPreferences.getInstance().getPreference().get("sessionToken", null) != null)
 		stage.show();
-//		else
-//			GlobalObjects.getInstance().openNewWindow("LoginRegister.fxml", "Login or Signup", StageStyle.DECORATED);
 	}
 
 	/**
